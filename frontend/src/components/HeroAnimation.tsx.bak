@@ -1,0 +1,33 @@
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
+
+
+function HeroAnimation() {
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "650px",
+      }}
+    >
+      <Canvas
+        camera={{
+          position: [0, 0, 5],
+          fov: 45,
+        }}
+      >
+        <Lights />
+
+        <Sphere />
+
+        <OrbitControls
+          autoRotate
+          autoRotateSpeed={0.5}
+          enableZoom={false}
+        />
+      </Canvas>
+    </div>
+  );
+}
+
+export default HeroAnimation;

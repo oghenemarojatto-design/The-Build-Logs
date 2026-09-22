@@ -1,0 +1,199 @@
+.post-card{
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(22px);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:
+    0 25px 60px rgba(37,99,235,.12);
+    transition:.35s;
+    border:1px solid rgba(255,255,255,.4);
+}
+
+.post-card:hover{
+    transform:translateY(-12px);
+    box-shadow:
+    0 35px 80px rgba(37,99,235,.18);
+}
+
+.post-image{
+
+    height:220px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #60a5fa,
+    #2563eb,
+    #1d4ed8
+    );
+
+    position:relative;
+}
+
+.post-image::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:180px;
+
+    height:180px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.15);
+
+    right:-40px;
+
+    top:-40px;
+}
+
+.post-image::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:120px;
+
+    height:120px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.1);
+
+    left:20px;
+
+    bottom:20px;
+}
+
+.category-badge{
+
+    position:absolute;
+
+    top:20px;
+
+    left:20px;
+
+    padding:8px 18px;
+
+    border-radius:50px;
+
+    background:white;
+
+    color:#2563eb;
+
+    font-weight:700;
+
+    font-size:.85rem;
+}
+
+.post-content{
+
+    padding:30px;
+}
+
+.post-content h3{
+
+    font-size:1.45rem;
+
+    margin-bottom:18px;
+
+    color:#0f172a;
+}
+
+.post-content p{
+
+    color:#64748b;
+
+    line-height:1.8;
+
+    margin-bottom:30px;
+}
+
+.post-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.author{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.avatar{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:50%;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:
+
+    linear-gradient(
+    135deg,
+    #60a5fa,
+    #2563eb
+    );
+
+    color:white;
+
+    font-weight:700;
+}
+
+.like-btn{
+
+    width:44px;
+
+    height:44px;
+
+    border:none;
+
+    border-radius:50%;
+
+    background:#f8fafc;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.like-btn:hover{
+
+    background:#2563eb;
+
+    color:white;
+}
+
+.read-more{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    text-decoration:none;
+
+    color:#2563eb;
+
+    font-weight:700;
+}

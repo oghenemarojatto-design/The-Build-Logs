@@ -1,0 +1,64 @@
+.myposts-page{
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+}
+
+.page-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.page-top button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:12px;
+    cursor:pointer;
+}
+
+.posts-table{
+    background:white;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.post-row{
+    display:grid;
+    grid-template-columns:2fr 120px 120px 180px;
+    align-items:center;
+    padding:20px 0;
+    border-bottom:1px solid #eee;
+}
+
+.post-row:last-child{
+    border:none;
+}
+
+.post-row h3{
+    margin:0;
+}
+
+.post-row p{
+    color:#888;
+}
+
+.actions{
+    display:flex;
+    gap:10px;
+}
+
+.actions button{
+    border:none;
+    padding:10px 15px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.delete{
+    background:#ef4444;
+    color:white;
+}

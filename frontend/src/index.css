@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Inter',sans-serif;
+}
+
+body{
+
+background:
+
+radial-gradient(circle at top left,#dbeafe 0%,transparent 40%),
+
+radial-gradient(circle at top right,#bfdbfe 0%,transparent 35%),
+
+linear-gradient(180deg,#f8fbff,#eef5ff,#ffffff);
+
+min-height:100vh;
+
+color:#0f172a;
+
+overflow-x:hidden;
+}
+
+#root{
+
+min-height:100vh;
+}

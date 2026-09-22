@@ -1,0 +1,206 @@
+.profile-dropdown {
+    position: absolute;
+    top: 72px;
+    right: 0;
+    width: 310px;
+
+    background: rgba(255,255,255,.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+
+    border: 1px solid rgba(255,255,255,.4);
+
+    border-radius: 22px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.12),
+        inset 0 1px rgba(255,255,255,.6);
+
+    animation: dropdown .25s ease;
+
+    z-index: 9999;
+}
+
+@keyframes dropdown{
+
+    from{
+
+        opacity:0;
+        transform:translateY(-10px) scale(.97);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0) scale(1);
+
+    }
+
+}
+
+.profile-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    padding:22px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #3b82f6
+    );
+
+    color:white;
+
+}
+
+.profile-avatar{
+
+    width:64px;
+
+    height:64px;
+
+    border-radius:50%;
+
+    background:white;
+
+    color:#2563eb;
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    box-shadow:0 10px 30px rgba(255,255,255,.35);
+
+}
+
+.profile-header h4{
+
+    margin:0;
+
+    font-size:18px;
+
+}
+
+.profile-header p{
+
+    margin:5px 0;
+
+    opacity:.9;
+
+    font-size:14px;
+
+}
+
+.profile-header small{
+
+    background:rgba(255,255,255,.2);
+
+    padding:4px 10px;
+
+    border-radius:20px;
+
+    font-size:12px;
+
+}
+
+.profile-dropdown a{
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    text-decoration:none;
+
+    color:#1e293b;
+
+    padding:15px 20px;
+
+    transition:.25s;
+
+    font-weight:500;
+
+}
+
+.profile-dropdown a span{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.profile-dropdown a:hover{
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+    padding-left:28px;
+
+}
+
+.badge{
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:12px;
+
+    padding:3px 8px;
+
+    border-radius:999px;
+
+}
+
+.logout-btn{
+
+    width:100%;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    padding:18px 20px;
+
+    background:white;
+
+    border:none;
+
+    border-top:1px solid #eee;
+
+    color:#ef4444;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.logout-btn:hover{
+
+    background:#fff5f5;
+
+}
