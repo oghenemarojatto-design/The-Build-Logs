@@ -4,152 +4,156 @@ Django settings for my_website project.
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Load environment variables from .env
+load_dotenv(BASE_DIR / ".env")
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t5h7@8in7cxli%v!i!ize@p)qh%7=lh12lcq%u*k5^w)dw(^!%'
+SECRET_KEY = os.getenv("SECRET_KEY")
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
+
 
 ALLOWED_HOSTS = []
 
 
-# ==========================
-# Installed Apps
-# ==========================
+# Application definition
+
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
-    # Third-party apps
-    'corsheaders',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'crispy_forms',
-    'crispy_bootstrap4',
+    "corsheaders",
+    "rest_framework",
+    "rest_framework.authtoken",
 
-    # Local apps
-    'blog.apps.BlogConfig',
-    'users.apps.UsersConfig',
+    "crispy_forms",
+    "crispy_bootstrap4",
+
+    "blog.apps.BlogConfig",
+    "users.apps.UsersConfig",
 ]
 
 
-# ==========================
-# Middleware
-# ==========================
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
 
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 
-ROOT_URLCONF = 'my_website.urls'
+ROOT_URLCONF = "my_website.urls"
 
 
-# ==========================
-# Templates
-# ==========================
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
 
-WSGI_APPLICATION = 'my_website.wsgi.application'
+WSGI_APPLICATION = "my_website.wsgi.application"
 
 
-# ==========================
 # Database
-# ==========================
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
 
 
-# ==========================
-# Password Validation
-# ==========================
+# Password validation
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
 
-# ==========================
 # Internationalization
-# ==========================
-LANGUAGE_CODE = 'en-us'
+# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "en-us"
+
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
 USE_TZ = True
 
 
-# ==========================
-# Static & Media Files
-# ==========================
-STATIC_URL = 'static/'
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = "static/"
 
 
-# ==========================
+# Media files
+
+MEDIA_URL = "/media/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+
 # Crispy Forms
-# ==========================
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 
 
-# ==========================
-# Authentication
-# ==========================
-LOGIN_REDIRECT_URL = 'blog-home'
-LOGIN_URL = 'login'
+# Authentication redirects
+
+LOGIN_REDIRECT_URL = "blog-home"
+
+LOGIN_URL = "login"
 
 
-# ==========================
 # Django REST Framework
-# ==========================
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -160,18 +164,15 @@ REST_FRAMEWORK = {
 }
 
 
-# ==========================
-# CORS (React Frontend)
-# ==========================
+# CORS settings
+
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
 
-# For development only
 CORS_ALLOW_CREDENTIALS = True
 
 
-# ==========================
-# Default Primary Key
-# ==========================
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Default primary key field type
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
