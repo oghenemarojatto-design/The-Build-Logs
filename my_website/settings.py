@@ -3,6 +3,8 @@ Django settings for my_website project.
 """
 
 import os
+import dj_database_url
+
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -83,14 +85,11 @@ WSGI_APPLICATION = "my_website.wsgi.application"
 # Database
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "the_build_logs",
-        "USER": "postgres",
-        "PASSWORD": "milesfc123",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
+    "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=os.getenv("DEBUG", "True").lower() != "true",
+    )
 }
 
 # Password validation
@@ -177,3 +176,4 @@ CORS_ALLOW_CREDENTIALS = True
 # Default primary key field type
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+STATIC_ROOT = BASE_DIR / "staticfiles"
