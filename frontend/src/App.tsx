@@ -10,6 +10,7 @@ import PostDetailPage from "./pages/PostDetailPage";
 import CategoriesPage from "./pages/CategoriesPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import CreatePostPage from "./pages/CreatePostPage";
 
 // Dashboard Pages
 import DashboardPage from "./pages/DashboardPage";
@@ -31,7 +32,7 @@ function App() {
 
         <Route path="categories" element={<CategoriesPage />} />
 
-        <Route path="create-post" element={<MyPostsPage />} />
+        <Route path="create-post" element={<CreatePostPage />} />
 
         {/* User Pages */}
         <Route path="dashboard" element={<DashboardPage />} />
