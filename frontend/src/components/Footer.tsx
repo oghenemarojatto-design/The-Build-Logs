@@ -26,7 +26,7 @@ export default function Footer() {
           <div className="footer-brand">
             <Link to="/" className="footer-logo">
               <span className="footer-logo-icon">B</span>
-              <span>BlueBlog</span>
+              <span>The Build Logs</span>
             </Link>
 
             <p>
@@ -64,7 +64,7 @@ export default function Footer() {
           <div className="footer-column">
             <h3>Community</h3>
 
-            <Link to="/register">Join BlueBlog</Link>
+            <Link to="/register">Join The Build Logs</Link>
             <Link to="/create-post">Write an Article</Link>
             <Link to="/profile">Your Profile</Link>
             <Link to="/posts">Discover Writers</Link>
@@ -122,7 +122,7 @@ export default function Footer() {
 
           <div className="footer-legal">
             <span>
-              © {new Date().getFullYear()} BlueBlog.
+              © {new Date().getFullYear()} The Build Logs.
               All rights reserved.
             </span>
 

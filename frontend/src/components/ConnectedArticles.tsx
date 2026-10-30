@@ -70,7 +70,7 @@ export default function ConnectedArticles() {
           </h2>
 
           <p>
-            Discover ideas from the BlueBlog community
+            Discover ideas from the The Build Logs community
             and explore the connections between them.
           </p>
         </motion.div>
@@ -179,7 +179,7 @@ export default function ConnectedArticles() {
 
                     <span>
                       {article.author?.username ||
-                        "BlueBlog Writer"}
+                        "The Build Logs Writer"}
                     </span>
 
                   </div>

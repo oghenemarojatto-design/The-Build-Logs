@@ -3,7 +3,7 @@ import "./DashboardSidebar.css";
 export default function DashboardSidebar() {
   return (
     <aside className="dashboard-sidebar">
-      <h2>BlueBlog</h2>
+      <h2>The Build Logs</h2>
 
       <nav>
         <p>Dashboard</p>

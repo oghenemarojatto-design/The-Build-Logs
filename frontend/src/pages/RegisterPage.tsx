@@ -1,8 +1,17 @@
-﻿import { useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { FaGoogle, FaGithub, FaFacebook, FaEye, FaEyeSlash } from "react-icons/fa";
+
+import {
+  FaGoogle,
+  FaGithub,
+  FaFacebook,
+  FaEye,
+  FaEyeSlash,
+} from "react-icons/fa";
+
 import { FaXTwitter } from "react-icons/fa6";
+
 import api from "../services/api";
 import "./RegisterPage.css";
 
@@ -13,8 +22,11 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState(false);
+
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,6 +40,11 @@ export default function RegisterPage() {
       return;
     }
 
+    if (password.length < 8) {
+      setError("Your password must contain at least 8 characters.");
+      return;
+    }
+
     if (!agree) {
       setError("Please accept the Terms & Conditions.");
       return;
@@ -36,36 +53,44 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
+      // Create a real account through Django.
       await api.post("/api/register/", {
         username: username.trim(),
         email: email.trim(),
         password,
       });
 
+      // Registration succeeded. The user must now log in.
       navigate("/login", {
         replace: true,
-        state: { notice: "Account created successfully. Please sign in." },
+        state: {
+          notice: "Account created successfully. Please sign in.",
+        },
       });
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const data = err.response?.data as
-          | Record<string, unknown>
-          | undefined;
+        const data = err.response?.data;
 
-        if (data) {
-          const messages = Object.entries(data).flatMap(([field, value]) =>
-            (Array.isArray(value) ? value : [value])
+        if (data && typeof data === "object") {
+          const messages = Object.entries(
+            data as Record<string, unknown>
+          ).flatMap(([field, value]) => {
+            const items = Array.isArray(value) ? value : [value];
+
+            return items
               .filter((item): item is string => typeof item === "string")
-              .map((item) => `${field}: ${item}`)
-          );
+              .map((item) => `${field}: ${item}`);
+          });
 
           setError(
-            messages.length
+            messages.length > 0
               ? messages.join(" ")
               : "Registration failed. Please check your details."
           );
         } else {
-          setError("Cannot reach the server. Please try again.");
+          setError(
+            "Could not connect to the server. Please try again."
+          );
         }
       } else {
         setError("Something went wrong. Please try again.");
@@ -78,18 +103,25 @@ export default function RegisterPage() {
   return (
     <div className="register-page">
       <div className="register-overlay" />
+
       <div className="register-card">
         <div className="register-header">
           <div className="logo-circle">B</div>
+
           <h1>Create Account</h1>
-          <p>Join BlueBlog and start sharing ideas with creators around the world.</p>
+
+          <p>
+            Join BlueBlog and start sharing ideas with creators
+            around the world.
+          </p>
         </div>
 
         <form onSubmit={handleRegister}>
           <div className="input-group">
-            <label htmlFor="reg-username">Username</label>
+            <label htmlFor="register-username">Username</label>
+
             <input
-              id="reg-username"
+              id="register-username"
               type="text"
               placeholder="Enter your username"
               value={username}
@@ -100,9 +132,10 @@ export default function RegisterPage() {
           </div>
 
           <div className="input-group">
-            <label htmlFor="reg-email">Email</label>
+            <label htmlFor="register-email">Email</label>
+
             <input
-              id="reg-email"
+              id="register-email"
               type="email"
               placeholder="Enter your email"
               value={email}
@@ -113,10 +146,11 @@ export default function RegisterPage() {
           </div>
 
           <div className="input-group">
-            <label htmlFor="reg-password">Password</label>
+            <label htmlFor="register-password">Password</label>
+
             <div className="password-box">
               <input
-                id="reg-password"
+                id="register-password"
                 type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
                 value={password}
@@ -125,6 +159,7 @@ export default function RegisterPage() {
                 minLength={8}
                 required
               />
+
               <button
                 type="button"
                 className="eye-btn"
@@ -137,10 +172,13 @@ export default function RegisterPage() {
           </div>
 
           <div className="input-group">
-            <label htmlFor="reg-confirm">Confirm Password</label>
+            <label htmlFor="register-confirm-password">
+              Confirm Password
+            </label>
+
             <div className="password-box">
               <input
-                id="reg-confirm"
+                id="register-confirm-password"
                 type={showConfirmPassword ? "text" : "password"}
                 placeholder="Confirm your password"
                 value={confirmPassword}
@@ -148,11 +186,16 @@ export default function RegisterPage() {
                 autoComplete="new-password"
                 required
               />
+
               <button
                 type="button"
                 className="eye-btn"
-                aria-label={showConfirmPassword ? "Hide password" : "Show password"}
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                aria-label={
+                  showConfirmPassword ? "Hide password" : "Show password"
+                }
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
               >
                 {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -168,24 +211,49 @@ export default function RegisterPage() {
             I agree to the Terms & Conditions
           </label>
 
-          {error && <p role="alert" style={{ color: "#dc2626" }}>{error}</p>}
+          {error && (
+            <p
+              role="alert"
+              style={{ color: "#dc2626", marginTop: "12px" }}
+            >
+              {error}
+            </p>
+          )}
 
-          <button className="login-btn" type="submit" disabled={loading}>
+          <button
+            type="submit"
+            className="login-btn"
+            disabled={loading}
+          >
             {loading ? "Creating Account..." : "Create Account"}
           </button>
         </form>
 
-        <div className="divider"><span>or continue with</span></div>
+        <div className="divider">
+          <span>or continue with</span>
+        </div>
 
         <div className="social-buttons">
-          <button type="button" disabled title="Google login not configured"><FaGoogle /></button>
-          <button type="button" disabled title="GitHub login not configured"><FaGithub /></button>
-          <button type="button" disabled title="Facebook login not configured"><FaFacebook /></button>
-          <button type="button" disabled title="X login not configured"><FaXTwitter /></button>
+          <button type="button" disabled title="Google login is not configured">
+            <FaGoogle />
+          </button>
+
+          <button type="button" disabled title="GitHub login is not configured">
+            <FaGithub />
+          </button>
+
+          <button type="button" disabled title="Facebook login is not configured">
+            <FaFacebook />
+          </button>
+
+          <button type="button" disabled title="X login is not configured">
+            <FaXTwitter />
+          </button>
         </div>
 
         <div className="register-link">
-          Already have an account? <Link to="/login">Sign In</Link>
+          Already have an account?{" "}
+          <Link to="/login">Sign In</Link>
         </div>
       </div>
     </div>

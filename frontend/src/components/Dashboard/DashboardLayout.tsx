@@ -12,7 +12,7 @@ export default function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
   return (
-    <div className="dashboard">
+    <div className="dashboard-shell">
       <DashboardSidebar />
 
       <div className="dashboard-main">

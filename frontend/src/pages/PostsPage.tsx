@@ -67,7 +67,7 @@ export default function PostsPage() {
           transition={{ duration: 0.7 }}
         >
           <span className="posts-label">
-            BLUEBLOG ARTICLES
+            THE BUILD LOGS ARTICLES
           </span>
 
           <h1>
@@ -78,7 +78,7 @@ export default function PostsPage() {
 
           <p>
             Discover stories, knowledge and ideas from
-            the BlueBlog community.
+            the The Build Logs community.
           </p>
 
           {/* Search */}

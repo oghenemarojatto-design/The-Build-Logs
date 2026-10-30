@@ -159,7 +159,7 @@ export default function PostDetailPage() {
 
               <span>
                 {post.author?.username ||
-                  "BlueBlog Writer"}
+                  "The Build Logs Writer"}
               </span>
 
             </div>
@@ -279,7 +279,7 @@ export default function PostDetailPage() {
 
                   <strong>
                     {c.author?.username ||
-                      "BlueBlog User"}
+                      "The Build Logs User"}
                   </strong>
 
                   <p>

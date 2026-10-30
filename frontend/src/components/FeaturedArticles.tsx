@@ -62,7 +62,7 @@ export default function FeaturedArticles() {
 
             <p>
               Explore some of the latest ideas and
-              perspectives from the BlueBlog community.
+              perspectives from the The Build Logs community.
             </p>
           </div>
 
@@ -175,7 +175,7 @@ export default function FeaturedArticles() {
 
                       <span>
                         {post.author?.username ||
-                          "BlueBlog Writer"}
+                          "The Build Logs Writer"}
                       </span>
 
                     </div>

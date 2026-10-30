@@ -42,12 +42,19 @@ export default function LoginPage() {
         throw new Error("The server did not return authentication tokens.");
       }
 
-      // Keep the access token available to the API client.
+      // Save the logged-in user's details for the dashboard.
+      const userData = {
+        username: username.trim(),
+        email: response.data.email || "",
+      };
+
+      localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("token", access);
 
       if (remember) {
         localStorage.setItem("refresh", refresh);
       } else {
+        localStorage.removeItem("refresh");
         sessionStorage.setItem("refresh", refresh);
       }
 
@@ -90,7 +97,7 @@ export default function LoginPage() {
         <div className="login-left">
           <div className="brand">
             <div className="brand-logo">B</div>
-            <h2>BlueBlog</h2>
+            <h2>The Build Logs</h2>
           </div>
 
           <span className="premium-tag">
@@ -269,3 +276,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
