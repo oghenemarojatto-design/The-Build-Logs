@@ -6,14 +6,19 @@ import {
 } from "react";
 
 import type { ReactNode } from "react";
-interface User {
+
+export interface User {
+  id?: number;
   username: string;
   email: string;
+  first_name?: string;
+  last_name?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (user: User, token: string) => void;
+  updateUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -26,20 +31,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const savedUser = localStorage.getItem("user");
 
     if (savedUser) {
-      setUser(JSON.parse(savedUser));
+      try {
+        setUser(JSON.parse(savedUser));
+      } catch {
+        localStorage.removeItem("user");
+      }
     }
   }, []);
 
   const login = (userData: User, token: string) => {
     setUser(userData);
-
     localStorage.setItem("user", JSON.stringify(userData));
     localStorage.setItem("token", token);
   };
 
+  const updateUser = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+  };
+
   const logout = () => {
     setUser(null);
-
     localStorage.removeItem("user");
     localStorage.removeItem("token");
   };
@@ -49,6 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         user,
         login,
+        updateUser,
         logout,
       }}
     >

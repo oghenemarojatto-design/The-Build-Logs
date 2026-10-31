@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from .models import Post, Comment, Bookmark
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -15,15 +15,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = (
-            "id",
-            "post",
-            "author",
-            "parent",
-            "content",
-            "created_at",
-            "replies",
-        )
+        fields = ("id", "post", "author", "parent", "content", "created_at", "replies")
         read_only_fields = ("author",)
 
     def get_replies(self, obj):
@@ -37,21 +29,17 @@ class PostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = (
-            "id",
-            "title",
-            "content",
-            "author",
-            "created_at",
-            "updated_at",
-            "comments",
-        )
-        read_only_fields = (
-            "author",
-            "created_at",
-            "updated_at",
-        )
+        fields = ("id", "title", "content", "author", "created_at", "updated_at", "comments")
+        read_only_fields = ("author", "created_at", "updated_at")
 
     def get_comments(self, obj):
         comments = obj.comments.filter(parent=None)
         return CommentSerializer(comments, many=True).data
+
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    post = PostSerializer(read_only=True)
+
+    class Meta:
+        model = Bookmark
+        fields = ("id", "post", "created_at")

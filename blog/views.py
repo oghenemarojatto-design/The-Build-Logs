@@ -5,8 +5,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
-from .models import Post, Comment
-from .serializers import PostSerializer, CommentSerializer
+from .models import Post, Comment, Bookmark
+from .serializers import PostSerializer, CommentSerializer, BookmarkSerializer
 
 
 @api_view(['POST'])
@@ -283,3 +283,59 @@ def create_comment(request, post_id):
             {'error': 'Post not found'},
             status=status.HTTP_404_NOT_FOUND
         )
+# ==========================
+# BOOKMARKS
+# ==========================
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_bookmarks(request):
+    bookmarks = Bookmark.objects.filter(
+        user=request.user
+    ).select_related('post', 'post__author')
+
+    serializer = BookmarkSerializer(bookmarks, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_bookmark(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+
+        bookmark, created = Bookmark.objects.get_or_create(
+            user=request.user,
+            post=post
+        )
+
+        return Response(
+            {
+                'message': 'Bookmark saved' if created else 'Already bookmarked',
+                'bookmarked': True
+            },
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
+
+    except Post.DoesNotExist:
+        return Response(
+            {'error': 'Post not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def remove_bookmark(request, post_id):
+    deleted, _ = Bookmark.objects.filter(
+        user=request.user,
+        post_id=post_id
+    ).delete()
+
+    if deleted:
+        return Response({'message': 'Bookmark removed'})
+
+    return Response(
+        {'error': 'Bookmark not found'},
+        status=status.HTTP_404_NOT_FOUND
+    )

@@ -18,7 +18,7 @@ api.interceptors.request.use(
       config.url !== "/api/login/" &&
       config.url !== "/api/register/"
     ) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = `Token ${token}`;
     }
 
     return config;
@@ -27,3 +27,4 @@ api.interceptors.request.use(
 );
 
 export default api;
+
