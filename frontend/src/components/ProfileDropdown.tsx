@@ -1,82 +1,93 @@
 import {
-FiUser,
-FiGrid,
-FiBookmark,
-FiBell,
-FiSettings,
-FiLogOut,
-FiFileText,
-FiChevronRight,
+  FiUser,
+  FiGrid,
+  FiBookmark,
+  FiBell,
+  FiSettings,
+  FiLogOut,
+  FiFileText,
+  FiChevronRight,
 } from "react-icons/fi";
 
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import "./ProfileDropdown.css";
 
-export default function ProfileDropdown() {
-const { user, logout } = useAuth();
-const navigate = useNavigate();
+interface ProfileDropdownProps {
+  onClose: () => void;
+}
 
-const fullName =
-`${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
-user?.username ||
-"User";
+export default function ProfileDropdown({
+  onClose,
+}: ProfileDropdownProps) {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
-const initials =
-`${user?.first_name?.[0] || ""}${user?.last_name?.[0] || ""}`.toUpperCase() ||
-user?.username?.[0]?.toUpperCase() ||
-"U";
+  const fullName =
+    `${user?.first_name || ""} ${user?.last_name || ""}`.trim() ||
+    user?.username ||
+    "User";
 
-const handleLogout = () => {
-logout();
-navigate("/login");
-};
+  const initials =
+    `${user?.first_name?.[0] || ""}${user?.last_name?.[0] || ""}`.toUpperCase() ||
+    user?.username?.[0]?.toUpperCase() ||
+    "U";
 
-return ( <div className="profile-dropdown"> <div className="profile-header"> <div className="profile-avatar">{initials}</div>
+  const handleLogout = () => {
+    onClose();
+    logout();
+    navigate("/login");
+  };
 
-```
-    <div>
-      <h4>{fullName}</h4>
-      <p>{user?.email || "No email added"}</p>
+  return (
+    <div className="profile-dropdown">
+      <div className="profile-header">
+        <div className="profile-avatar">{initials}</div>
+
+        <div>
+          <h4>{fullName}</h4>
+          <p>{user?.email || "No email added"}</p>
+        </div>
+      </div>
+
+      <Link to="/dashboard" onClick={onClose}>
+        <span><FiGrid /> Dashboard</span>
+        <FiChevronRight />
+      </Link>
+
+      <Link to="/profile" onClick={onClose}>
+        <span><FiUser /> My Profile</span>
+        <FiChevronRight />
+      </Link>
+
+      <Link to="/my-posts" onClick={onClose}>
+        <span><FiFileText /> My Posts</span>
+        <FiChevronRight />
+      </Link>
+
+      <Link to="/bookmarks" onClick={onClose}>
+        <span><FiBookmark /> Bookmarks</span>
+        <FiChevronRight />
+      </Link>
+
+      <Link to="/notifications" onClick={onClose}>
+        <span><FiBell /> Notifications</span>
+        <FiChevronRight />
+      </Link>
+
+      <Link to="/settings" onClick={onClose}>
+        <span><FiSettings /> Settings</span>
+        <FiChevronRight />
+      </Link>
+
+      <button
+        className="logout-btn"
+        type="button"
+        onClick={handleLogout}
+      >
+        <FiLogOut />
+        Logout
+      </button>
     </div>
-  </div>
-
-  <Link to="/dashboard">
-    <span><FiGrid /> Dashboard</span>
-    <FiChevronRight />
-  </Link>
-
-  <Link to="/profile">
-    <span><FiUser /> My Profile</span>
-    <FiChevronRight />
-  </Link>
-
-  <Link to="/my-posts">
-    <span><FiFileText /> My Posts</span>
-    <FiChevronRight />
-  </Link>
-
-  <Link to="/bookmarks">
-    <span><FiBookmark /> Bookmarks</span>
-    <FiChevronRight />
-  </Link>
-
-  <Link to="/notifications">
-    <span><FiBell /> Notifications</span>
-    <FiChevronRight />
-  </Link>
-
-  <Link to="/settings">
-    <span><FiSettings /> Settings</span>
-    <FiChevronRight />
-  </Link>
-
-  <button className="logout-btn" onClick={handleLogout}>
-    <FiLogOut />
-    Logout
-  </button>
-</div>
-
-
-);
+  );
 }

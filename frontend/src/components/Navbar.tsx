@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import {
-FiSearch,
-FiBell,
-FiEdit3,
-FiMenu,
-FiX,
-FiBookOpen,
+  FiSearch,
+  FiBell,
+  FiEdit3,
+  FiMenu,
+  FiX,
+  FiBookOpen,
 } from "react-icons/fi";
 
 import ProfileDropdown from "./ProfileDropdown";
@@ -14,89 +14,124 @@ import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
-const [open, setOpen] = useState(false);
-const [mobileOpen, setMobileOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-const { user } = useAuth();
+  const { user } = useAuth();
 
-const closeMobileMenu = () => setMobileOpen(false);
+  const closeMobileMenu = () => setMobileOpen(false);
+  const closeProfileDropdown = () => setOpen(false);
 
-const initials = user
-? `${user.first_name?.[0] || ""}${user.last_name?.[0] || ""}`.toUpperCase() ||
-user.username?.[0]?.toUpperCase() ||
-"U"
-: "U";
+  const initials = user
+    ? `${user.first_name?.[0] || ""}${user.last_name?.[0] || ""}`.toUpperCase() ||
+      user.username?.[0]?.toUpperCase() ||
+      "U"
+    : "U";
 
-return ( <header className="navbar-wrapper"> <nav className="navbar" aria-label="Main navigation"> <Link
-       to="/"
-       className="logo"
-       aria-label="The Build Logs home"
-       onClick={closeMobileMenu}
-     > <span className="logo-icon"><FiBookOpen /></span> <span className="logo-wordmark">
-The Build <strong>Logs</strong> </span> </Link>
+  return (
+    <header className="navbar-wrapper">
+      <nav className="navbar" aria-label="Main navigation">
+        <Link
+          to="/"
+          className="logo"
+          aria-label="The Build Logs home"
+          onClick={() => {
+            closeMobileMenu();
+            closeProfileDropdown();
+          }}
+        >
+          <span className="logo-icon">
+            <FiBookOpen />
+          </span>
 
-```
-    <div className={`nav-links${mobileOpen ? " nav-links-open" : ""}`}>
-      <NavLink to="/" end onClick={closeMobileMenu}>Home</NavLink>
-      <NavLink to="/posts" onClick={closeMobileMenu}>Articles</NavLink>
-      <NavLink to="/categories" onClick={closeMobileMenu}>Categories</NavLink>
-      <NavLink to="/about" onClick={closeMobileMenu}>About</NavLink>
-    </div>
+          <span className="logo-wordmark">
+            The Build <strong>Logs</strong>
+          </span>
+        </Link>
 
-    <div className="nav-right">
-      <label className="search-box">
-        <FiSearch aria-hidden="true" />
-        <input
-          type="search"
-          placeholder="Search articles..."
-          aria-label="Search articles"
-        />
-      </label>
+        <div className={`nav-links${mobileOpen ? " nav-links-open" : ""}`}>
+          <NavLink to="/" end onClick={closeMobileMenu}>
+            Home
+          </NavLink>
 
-      <button className="icon-btn" type="button" aria-label="Notifications">
-        <FiBell />
-      </button>
+          <NavLink to="/posts" onClick={closeMobileMenu}>
+            Articles
+          </NavLink>
 
-      <Link to="/create-post" className="write-btn">
-        <FiEdit3 />
-        <span>Write article</span>
-      </Link>
+          <NavLink to="/categories" onClick={closeMobileMenu}>
+            Categories
+          </NavLink>
 
-      {user && (
-        <div className="avatar-wrapper">
+          <NavLink to="/about" onClick={closeMobileMenu}>
+            About
+          </NavLink>
+        </div>
+
+        <div className="nav-right">
+          <label className="search-box">
+            <FiSearch aria-hidden="true" />
+
+            <input
+              type="search"
+              placeholder="Search articles..."
+              aria-label="Search articles"
+            />
+          </label>
+
           <button
-            className="avatar"
+            className="icon-btn"
             type="button"
-            aria-label="Open profile menu"
-            aria-expanded={open}
-            onClick={() => setOpen((value) => !value)}
+            aria-label="Notifications"
           >
-            {initials}
+            <FiBell />
           </button>
 
-          {open && (
-            <div className="profile-dropdown-anchor">
-              <ProfileDropdown />
+          <Link
+            to="/create-post"
+            className="write-btn"
+            onClick={closeProfileDropdown}
+          >
+            <FiEdit3 />
+            <span>Write article</span>
+          </Link>
+
+          {user && (
+            <div className="avatar-wrapper">
+              <button
+                className="avatar"
+                type="button"
+                aria-label="Open profile menu"
+                aria-expanded={open}
+                onClick={() => setOpen((value) => !value)}
+              >
+                {initials}
+              </button>
+
+              {open && (
+                <div className="profile-dropdown-anchor">
+                  <ProfileDropdown onClose={closeProfileDropdown} />
+                </div>
+              )}
             </div>
           )}
+
+          <button
+            className="mobile-menu-btn"
+            type="button"
+            aria-label={
+              mobileOpen
+                ? "Close navigation menu"
+                : "Open navigation menu"
+            }
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen((value) => !value)}
+          >
+            {mobileOpen ? <FiX /> : <FiMenu />}
+          </button>
         </div>
-      )}
-
-      <button
-        className="mobile-menu-btn"
-        type="button"
-        aria-label={mobileOpen ? "Close navigation menu" : "Open navigation menu"}
-        aria-expanded={mobileOpen}
-        onClick={() => setMobileOpen((value) => !value)}
-      >
-        {mobileOpen ? <FiX /> : <FiMenu />}
-      </button>
-    </div>
-  </nav>
-</header>
-
-
-);
+      </nav>
+    </header>
+  );
 }
 
 export default Navbar;
