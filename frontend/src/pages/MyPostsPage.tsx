@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import DashboardLayout from "../components/Dashboard/DashboardLayout";
 import api from "../services/api";
@@ -15,25 +15,8 @@ interface Post {
   };
 }
 
-function getUserId(): number | null {
-  const token = localStorage.getItem("token");
-  if (!token) return null;
-
-  try {
-    const payload = JSON.parse(
-      atob(
-        token.split(".")[1]
-          .replace(/-/g, "+")
-          .replace(/_/g, "/")
-      )
-    );
-
-    return typeof payload.user_id === "number"
-      ? payload.user_id
-      : null;
-  } catch {
-    return null;
-  }
+interface UserProfile {
+  id: number;
 }
 
 export default function MyPostsPage() {
@@ -46,17 +29,10 @@ export default function MyPostsPage() {
     let active = true;
 
     async function loadPosts() {
-      const userId = getUserId();
-
-      if (!userId) {
-        if (active) {
-          setError("Please sign in again to view your articles.");
-          setLoading(false);
-        }
-        return;
-      }
-
       try {
+        const profileResponse = await api.get<UserProfile>("/api/profile/");
+        const userId = profileResponse.data.id;
+
         const response = await api.get<Post[]>("/posts/");
 
         const myPosts = response.data.filter(
@@ -81,23 +57,18 @@ export default function MyPostsPage() {
   }, []);
 
   async function deletePost(postId: number) {
-    if (
-      !window.confirm(
-        "Delete this article permanently? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
+    const confirmed = window.confirm(
+      "Delete this article permanently? This action cannot be undone."
+    );
+
+    if (!confirmed) return;
 
     setDeletingId(postId);
     setError("");
 
     try {
       await api.delete(`/posts/${postId}/delete/`);
-
-      setPosts((current) =>
-        current.filter((post) => post.id !== postId)
-      );
+      setPosts((current) => current.filter((post) => post.id !== postId));
     } catch {
       setError("Unable to delete this article. Please try again.");
     } finally {
@@ -120,7 +91,6 @@ export default function MyPostsPage() {
         </div>
 
         {loading && <p>Loading your articles...</p>}
-
         {error && <p role="alert">{error}</p>}
 
         {!loading && !error && posts.length === 0 && (
@@ -145,7 +115,6 @@ export default function MyPostsPage() {
 
                 <div className="actions">
                   <Link to={`/posts/${post.id}`}>View</Link>
-
                   <button
                     type="button"
                     className="delete"
