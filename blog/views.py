@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
-from .models import Post, Comment, Bookmark
+from .models import Post, Comment, Bookmark, Like
 from .serializers import PostSerializer, CommentSerializer, BookmarkSerializer
 
 
@@ -101,7 +101,7 @@ def logout_view(request):
 def get_posts(request):
     posts = Post.objects.all().select_related('author')
 
-    serializer = PostSerializer(posts, many=True)
+    serializer = PostSerializer(posts, many=True, context={'request': request})
 
     return Response(serializer.data)
 
@@ -133,7 +133,7 @@ def get_post_detail(request, pk):
     try:
         post = Post.objects.get(pk=pk)
 
-        serializer = PostSerializer(post)
+        serializer = PostSerializer(post, context={'request': request})
 
         return Response(serializer.data)
 
@@ -339,3 +339,52 @@ def remove_bookmark(request, post_id):
         {'error': 'Bookmark not found'},
         status=status.HTTP_404_NOT_FOUND
     )
+
+
+# ==========================
+# LIKES
+# ==========================
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def like_post(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+
+        like, created = Like.objects.get_or_create(
+            user=request.user,
+            post=post
+        )
+
+        return Response({
+            "liked": True,
+            "likes_count": post.likes.count()
+        }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+    except Post.DoesNotExist:
+        return Response(
+            {"error": "Post not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def unlike_post(request, post_id):
+    try:
+        post = Post.objects.get(pk=post_id)
+        Like.objects.filter(
+            user=request.user,
+            post=post
+        ).delete()
+
+        return Response({
+            "liked": False,
+            "likes_count": post.likes.count()
+        })
+
+    except Post.DoesNotExist:
+        return Response(
+            {"error": "Post not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )

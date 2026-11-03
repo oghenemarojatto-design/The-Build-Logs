@@ -26,15 +26,30 @@ class CommentSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
     comments = serializers.SerializerMethodField()
+    likes_count = serializers.SerializerMethodField()
+    liked_by_user = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ("id", "title", "content", "author", "created_at", "updated_at", "comments")
+        fields = (
+            "id", "title", "content", "author",
+            "created_at", "updated_at", "comments",
+            "likes_count", "liked_by_user"
+        )
         read_only_fields = ("author", "created_at", "updated_at")
 
     def get_comments(self, obj):
         comments = obj.comments.filter(parent=None)
         return CommentSerializer(comments, many=True).data
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_liked_by_user(self, obj):
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()
+        return False
 
 
 class BookmarkSerializer(serializers.ModelSerializer):

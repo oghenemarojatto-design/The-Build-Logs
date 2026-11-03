@@ -18,6 +18,10 @@ urlpatterns = [
     path("posts/<int:post_id>/comments/", views.get_comments, name="get-comments"),
     path("posts/<int:post_id>/comments/create/", views.create_comment, name="create-comment"),
 
+    # Likes
+    path("posts/<int:post_id>/like/", views.like_post, name="like-post"),
+    path("posts/<int:post_id>/like/remove/", views.unlike_post, name="unlike-post"),
+
     # Bookmarks
     path("bookmarks/", views.get_bookmarks, name="get-bookmarks"),
     path("posts/<int:post_id>/bookmark/", views.add_bookmark, name="add-bookmark"),

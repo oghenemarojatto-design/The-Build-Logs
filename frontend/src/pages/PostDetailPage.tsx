@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   FiHeart,
@@ -11,16 +12,20 @@ import {
 import {
   getPost,
   createComment,
+  likePost,
+  unlikePost,
+  bookmarkPost,
+  removeBookmark,
+  getBookmarks,
   type Post,
+  type Comment,
 } from "../services/posts";
 
 import "./PostDetailPage.css";
 
-interface Comment {
-  id: number;
-  content: string;
-  author?: {
-    username: string;
+interface SavedBookmark {
+  post: {
+    id: number;
   };
 }
 
@@ -35,10 +40,16 @@ export default function PostDetailPage() {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(true);
   const [commentLoading, setCommentLoading] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [bookmarkLoading, setBookmarkLoading] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+
+  const postId = Number(id);
 
   const loadPost = async () => {
-    if (!id) {
+    if (!id || !Number.isInteger(postId) || postId <= 0) {
       setError("Post not found.");
       setLoading(false);
       return;
@@ -48,8 +59,7 @@ export default function PostDetailPage() {
       setLoading(true);
       setError("");
 
-      const data = await getPost(Number(id));
-
+      const data = await getPost(postId);
       setPost(data);
     } catch (err) {
       console.error("Failed to load post:", err);
@@ -60,57 +70,138 @@ export default function PostDetailPage() {
   };
 
   useEffect(() => {
-    loadPost();
+    void loadPost();
   }, [id]);
 
-  const handleComment = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  useEffect(() => {
+    let active = true;
+
+    const checkBookmark = async () => {
+      if (!id || !Number.isInteger(postId) || postId <= 0) return;
+
+      try {
+        const saved = (await getBookmarks()) as SavedBookmark[];
+
+        if (active) {
+          setBookmarked(
+            saved.some((item) => item.post?.id === postId)
+          );
+        }
+      } catch {
+        if (active) setBookmarked(false);
+      }
+    };
+
+    void checkBookmark();
+
+    return () => {
+      active = false;
+    };
+  }, [id]);
+
+  const handleComment = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!id || !comment.trim()) return;
 
     try {
       setCommentLoading(true);
+      setNotice("");
 
-      await createComment(Number(id), comment.trim());
+      await createComment(postId, comment.trim());
 
       setComment("");
-
+      setNotice("Comment posted successfully.");
       await loadPost();
     } catch (err) {
       console.error("Failed to create comment:", err);
-      setError("Unable to post your comment.");
+      setNotice("Unable to post your comment. Please log in and try again.");
     } finally {
       setCommentLoading(false);
     }
   };
 
+  const handleLike = async () => {
+    if (!post || likeLoading) return;
+
+    const wasLiked = Boolean(post.liked_by_user);
+
+    try {
+      setLikeLoading(true);
+      setNotice("");
+
+      setPost({
+        ...post,
+        liked_by_user: !wasLiked,
+        likes_count: Math.max(
+          0,
+          (post.likes_count ?? 0) + (wasLiked ? -1 : 1)
+        ),
+      });
+
+      const result = wasLiked
+        ? await unlikePost(post.id)
+        : await likePost(post.id);
+
+      setPost((current) =>
+        current
+          ? {
+              ...current,
+              liked_by_user: result.liked,
+              likes_count: result.likes_count,
+            }
+          : current
+      );
+    } catch (err) {
+      console.error("Failed to update like:", err);
+      await loadPost();
+      setNotice("Unable to update like. Please log in and try again.");
+    } finally {
+      setLikeLoading(false);
+    }
+  };
+
+  const handleBookmark = async () => {
+    if (!post || bookmarkLoading) return;
+
+    try {
+      setBookmarkLoading(true);
+      setNotice("");
+
+      if (bookmarked) {
+        await removeBookmark(post.id);
+        setBookmarked(false);
+        setNotice("Article removed from bookmarks.");
+      } else {
+        await bookmarkPost(post.id);
+        setBookmarked(true);
+        setNotice("Article saved to bookmarks.");
+      }
+    } catch (err) {
+      console.error("Failed to update bookmark:", err);
+      setNotice("Unable to save this article. Please log in and try again.");
+    } finally {
+      setBookmarkLoading(false);
+    }
+  };
+
   const handleShare = async () => {
     try {
-      await navigator.clipboard.writeText(
-        window.location.href
-      );
-
-      alert("Article link copied!");
+      await navigator.clipboard.writeText(window.location.href);
+      setNotice("Article link copied!");
     } catch {
-      console.log("Unable to copy link.");
+      setNotice("Unable to copy the link on this browser.");
     }
   };
 
   if (loading) {
-    return (
-      <div className="post-loading">
-        Loading article...
-      </div>
-    );
+    return <div className="post-loading">Loading article...</div>;
   }
 
   if (error || !post) {
     return (
       <div className="post-error">
         <h2>{error || "Article not found."}</h2>
-
         <Link to="/posts">
           <FiArrowLeft />
           Back to articles
@@ -123,83 +214,65 @@ export default function PostDetailPage() {
 
   return (
     <main className="post-detail-page">
-
-      {/* HERO */}
-
       <section className="post-hero">
-
         <div className="hero-overlay">
-
-          <Link
-            to="/posts"
-            className="back-to-posts"
-          >
+          <Link to="/posts" className="back-to-posts">
             <FiArrowLeft />
             Back to articles
           </Link>
 
-          <span className="badge">
-            {post.category || "Knowledge"}
-          </span>
+          <span className="badge">{post.category || "Knowledge"}</span>
 
           <h1>{post.title}</h1>
 
           <div className="post-meta">
-
             <div className="author">
-
               <div className="avatar">
-                {(
-                  post.author?.username ||
-                  "B"
-                )
+                {(post.author?.username || "B")
                   .charAt(0)
                   .toUpperCase()}
               </div>
 
               <span>
-                {post.author?.username ||
-                  "The Build Logs Writer"}
+                {post.author?.username || "The Build Logs Writer"}
               </span>
-
             </div>
 
             <div className="reading-time">
-
               <FiClock />
-
-              <span>
-                5 min read
-              </span>
-
+              <span>5 min read</span>
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-      {/* ARTICLE */}
-
       <article className="article">
-
-        {/* ACTIONS */}
-
         <div className="article-actions">
-
           <button
             type="button"
-            aria-label="Like article"
+            aria-label={post.liked_by_user ? "Unlike article" : "Like article"}
+            aria-pressed={Boolean(post.liked_by_user)}
+            disabled={likeLoading}
+            onClick={handleLike}
+            title={`${post.likes_count ?? 0} likes`}
           >
-            <FiHeart />
+            <FiHeart
+              fill={post.liked_by_user ? "currentColor" : "none"}
+            />
+            <span>{post.likes_count ?? 0}</span>
           </button>
 
           <button
             type="button"
-            aria-label="Save article"
+            aria-label={bookmarked ? "Remove bookmark" : "Save article"}
+            aria-pressed={bookmarked}
+            disabled={bookmarkLoading}
+            onClick={handleBookmark}
+            title={bookmarked ? "Remove bookmark" : "Save article"}
           >
-            <FiBookmark />
+            <FiBookmark
+              fill={bookmarked ? "currentColor" : "none"}
+            />
           </button>
 
           <button
@@ -209,130 +282,75 @@ export default function PostDetailPage() {
           >
             <FiShare2 />
           </button>
-
         </div>
 
-        {/* CONTENT */}
+        {notice && (
+          <p role="status" aria-live="polite">
+            {notice}
+          </p>
+        )}
 
         <div className="article-content">
           <p>{post.content}</p>
         </div>
-
       </article>
 
-      {/* COMMENTS */}
-
       <section className="comments">
-
         <div className="comments-header">
-
           <h2>
-            Comments
-            <span>{comments.length}</span>
+            Comments <span>{comments.length}</span>
           </h2>
 
-          <p>
-            Join the conversation and share your
-            thoughts.
-          </p>
-
+          <p>Join the conversation and share your thoughts.</p>
         </div>
 
-        {/* COMMENT LIST */}
-
         {comments.length === 0 ? (
-
           <div className="no-comments">
             <div>💬</div>
-
-            <h3>
-              No comments yet
-            </h3>
-
-            <p>
-              Be the first person to start the
-              conversation.
-            </p>
+            <h3>No comments yet</h3>
+            <p>Be the first person to start the conversation.</p>
           </div>
-
         ) : (
-
           <div className="comments-list">
-
             {comments.map((c) => (
-
-              <div
-                key={c.id}
-                className="comment-card"
-              >
-
+              <div key={c.id} className="comment-card">
                 <div className="avatar">
-                  {(
-                    c.author?.username ||
-                    "U"
-                  )
+                  {(c.author?.username || "U")
                     .charAt(0)
                     .toUpperCase()}
                 </div>
 
                 <div className="comment-body">
-
                   <strong>
-                    {c.author?.username ||
-                      "The Build Logs User"}
+                    {c.author?.username || "The Build Logs User"}
                   </strong>
-
-                  <p>
-                    {c.content}
-                  </p>
-
+                  <p>{c.content}</p>
                 </div>
-
               </div>
-
             ))}
-
           </div>
         )}
 
-        {/* CREATE COMMENT */}
-
-        <form
-          className="comment-form"
-          onSubmit={handleComment}
-        >
-
-          <h3>
-            Share your thoughts
-          </h3>
+        <form className="comment-form" onSubmit={handleComment}>
+          <h3>Share your thoughts</h3>
 
           <textarea
             rows={5}
             placeholder="Write a comment..."
             value={comment}
-            onChange={(e) =>
-              setComment(e.target.value)
-            }
+            onChange={(e) => setComment(e.target.value)}
             disabled={commentLoading}
             required
           />
 
           <button
             type="submit"
-            disabled={
-              commentLoading ||
-              !comment.trim()
-            }
+            disabled={commentLoading || !comment.trim()}
           >
-            {commentLoading
-              ? "Posting..."
-              : "Post Comment"}
+            {commentLoading ? "Posting..." : "Post Comment"}
           </button>
-
         </form>
-
       </section>
-
     </main>
   );
 }
