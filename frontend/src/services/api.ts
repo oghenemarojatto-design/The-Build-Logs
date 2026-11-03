@@ -12,9 +12,21 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
+    const method = config.method?.toLowerCase();
+    const url = config.url || "";
 
-    if (token) {
+    const isPublicRequest =
+      method === "get" &&
+      (
+        /^\/posts\/?$/.test(url) ||
+        /^\/posts\/\d+\/?$/.test(url) ||
+        /^\/posts\/\d+\/comments\/?$/.test(url)
+      );
+
+    if (token && !isPublicRequest) {
       config.headers.Authorization = `Token ${token}`;
+    } else {
+      delete config.headers.Authorization;
     }
 
     return config;
