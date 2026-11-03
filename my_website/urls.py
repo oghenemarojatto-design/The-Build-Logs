@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from users import views as user_views
+from blog import views as blog_views
 from users.views import RegisterAPIView, UserProfileAPIView
 
 from rest_framework_simplejwt.views import (
@@ -31,7 +32,7 @@ urlpatterns = [
 
     # React API
     path('api/register/', RegisterAPIView.as_view(), name='api-register'),
-    path('api/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/', blog_views.login_view, name='api-login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/profile/', UserProfileAPIView.as_view(), name='api-profile'),
 
@@ -44,4 +45,5 @@ if settings.DEBUG:
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
     )
+
 
