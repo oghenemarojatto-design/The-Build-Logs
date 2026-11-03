@@ -36,27 +36,17 @@ export default function LoginPage() {
         password,
       });
 
-      const { access, refresh } = response.data;
+      const { user, token } = response.data;
 
-      if (!access || !refresh) {
-        throw new Error("The server did not return authentication tokens.");
+      if (!token || !user) {
+        throw new Error("The server did not return a valid login token.");
       }
 
-      // Save the logged-in user's details for the dashboard.
-      const userData = {
-        username: username.trim(),
-        email: response.data.email || "",
-      };
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.removeItem("refresh");
+      sessionStorage.removeItem("refresh");
 
-      localStorage.setItem("user", JSON.stringify(userData));
-      localStorage.setItem("token", access);
-
-      if (remember) {
-        localStorage.setItem("refresh", refresh);
-      } else {
-        localStorage.removeItem("refresh");
-        sessionStorage.setItem("refresh", refresh);
-      }
 
       navigate("/dashboard", { replace: true });
     } catch (err: unknown) {
