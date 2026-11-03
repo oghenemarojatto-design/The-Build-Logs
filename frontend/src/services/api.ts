@@ -15,6 +15,10 @@ api.interceptors.request.use(
     const method = config.method?.toLowerCase();
     const url = config.url || "";
 
+    const isAuthRequest =
+      url.includes("/api/login/") ||
+      url.includes("/api/register/");
+
     const isPublicRequest =
       method === "get" &&
       (
@@ -23,7 +27,7 @@ api.interceptors.request.use(
         /^\/posts\/\d+\/comments\/?$/.test(url)
       );
 
-    if (token && !isPublicRequest) {
+    if (token && !isAuthRequest && !isPublicRequest) {
       config.headers.Authorization = `Token ${token}`;
     } else {
       delete config.headers.Authorization;
